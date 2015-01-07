@@ -1,0 +1,41 @@
+# Samsung NX Smart Camera Hacks
+
+This is a collection of scripts, hacks and knowledge for the Linux-based
+Samsung NX camera models. This project is work-in-progess, aimed at power
+users who have no fear of formatting their SD card, upgrading and downgrading
+firmware etc.
+
+**This information is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY. The authors take no responsibility for deleting your
+baby photographs, bricking your expensive camera or making demons fly out of
+your nose.**
+
+## Device Support
+
+Supported models:
+
+ * Samsung NX300
+ * Samsung NX300M ([downgrade to 1.11 required](http://lemmster.de/auto-backup-from-nx300-via-ftp.html#comments))
+ * Samsung NX2000 ([reported by ostkind](https://op-co.de/blog/posts/rooting_the_nx300/#comment-3476567f386e5ee0d5116e14ad28f6e0))
+
+Probably supported (testers needed):
+
+ * Samsung NX1 (requires a really brave volunteer :scream:)
+ * Samsung NX30
+ * Samsung NX200
+
+Probably incompatible:
+
+ * Samsung Galaxy NX
+ * Samsung NX210
+ * Samsung NX3000
+
+## Further Reading
+
+This collection is based on the following articles:
+
+ * [Hacking the Samsung NX300 'Smart' Camera](http://op-co.de/blog/posts/hacking_the_nx300/)
+ * [Hacking the Samsung NX300, part 2: Get Root!](http://op-co.de/blog/posts/rooting_the_nx300/)
+ * [Auto backup files from the Samsung NX300 camera in the background](http://lemmster.de/auto-backup-from-nx300-via-ftp.html)
+ * [NX Crypto Photography](https://sites.google.com/site/nxcryptophotography/)
+ * [Autobackup to Linux from the Samsung NX300M](https://cedarandthistle.wordpress.com/2014/11/01/autobackup-to-linux-from-the-samsung-nx300m/)
