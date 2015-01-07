@@ -36,6 +36,7 @@ This collection is based on the following articles:
 
  * [Hacking the Samsung NX300 'Smart' Camera](http://op-co.de/blog/posts/hacking_the_nx300/)
  * [Hacking the Samsung NX300, part 2: Get Root!](http://op-co.de/blog/posts/rooting_the_nx300/)
- * [Auto backup files from the Samsung NX300 camera in the background](http://lemmster.de/auto-backup-from-nx300-via-ftp.html)
  * [NX Crypto Photography](https://sites.google.com/site/nxcryptophotography/)
+ * [Auto backup files from the Samsung NX300 camera in the background](http://lemmster.de/auto-backup-from-nx300-via-ftp.html)
  * [Autobackup to Linux from the Samsung NX300M](https://cedarandthistle.wordpress.com/2014/11/01/autobackup-to-linux-from-the-samsung-nx300m/)
+ * [Cross-compile kernel module (ext2) for Samsung nx300 on Ubuntu 14.04](http://www.lemmster.de/cross-compile-kernel-module-samsung-nx300-ubnut-14.04.html)
