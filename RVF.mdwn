@@ -16,16 +16,22 @@ Here are the platform-agnostic steps for establishing connection with your camer
 ## Connecting to wifi
 
 First thing that needed is connecting to special wifi access point which camera opens when Remote Viewfinder is switched on. If it's not opened via NFC communication, you have this shown on screen, format is as follows:
+
 AP_SSC_[camera model]_0(possibly some other digit)-[first 3 digits of camera mac address]
+
 for example
+
 AP_SSC_NX3000_0-7E:8A:C1
+
 Some platforms like Android and Linux could connect to it programmatically.
 Fun fact: tap with camera NFC to any NFC-capable device causes camera to go to the specified mode without checking that "app" is actually started. That way, any NFC-capable device may connect to the camera faster.
 
 ## About commands
 
 When access point is connected, camera awaits for your commands. The best way to push these comand would be http requests or plain sockets. Commands below are presented as raw requests (likely for sockets), higher-level HTTP clients should strip down first header
+
 [HTTP method name] [url part] HTTP/1.0
+
 and HOST header, replacing them with language-specific command like passing full url (HOST+url part) into HTTP client object as well as http method name. Remaing headers should also be passed in language-specific way. Space after headers means payload for request which should be uploaded on connection.
 
 ## Connection commands sequence
@@ -36,7 +42,6 @@ First command in chain would be discovery/pairing.
 
     HOST: http://192.168.107.1:7788
     User-Agent: SEC_MODE_[your mac]
-
     Access-Method: manual
     NTS: alive
     Content-Length: 0
@@ -68,9 +73,14 @@ So main things here are #GetInfomation command, which is main key to remote view
 In the request response you will get all the necessary parameters that are set on camera like aperture and flash.
 Now your camera shows viewfinder on its screen and allows you to do the same on your platform.
 Camera opens hd video stream on the following url:
+
 http://192.168.107.1:7679/livestream.avi
+
 or its 320x240 (QVGA) version
+
 http://192.168.107.1:7679/qvga_livestream.avi
+
+From that point you are able to send SOAP requests to control your camera while in viewfinder.
 
 ## Additional topics
  * [What's known about livestream on NX camera] (https://github.com/Nikolas-LFDesigns/samsung-nx-hacks/blob/master/Livestream.mdwn)
