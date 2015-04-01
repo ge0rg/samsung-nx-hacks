@@ -1,0 +1,38 @@
+<?xml version="1.0"?> 
+<root xmlns="urn:schemas-upnp-org:device-1-0" xmlns:sec="http://www.sec.co.kr/dlna" xmlns:dlna="urn:schemas-dlna-org:device-1-0"> 
+	<specVersion>
+		<major>1</major>
+		<minor>0</minor>
+	</specVersion> 
+	<device>
+		<dlna:X_DLNADOC>DMS-1.50</dlna:X_DLNADOC>
+		<deviceType>urn:schemas-upnp-org:device:MediaServer:1</deviceType>
+		<friendlyName>[Camera]NX3000</friendlyName>
+		<manufacturer>Samsung Electronics</manufacturer>
+		<manufacturerURL>http://www.samsung.com</manufacturerURL>
+		<modelDescription>Samsung Camera DMS</modelDescription>
+		<modelName>NXF1</modelName>
+		<modelNumber>1.0</modelNumber>
+		<modelURL>http://www.samsung.com</modelURL>
+		<serialNumber>20081113 Folderview</serialNumber>
+		<sec:X_ProductCap>smi,getMediaInfo.sec,getCaptionInfo.sec</sec:X_ProductCap>
+		<UDN>uuid:16a65700-0034-1000-8873-a021957e8ac1</UDN>
+		<serviceList>
+			<service>
+				<serviceType>urn:schemas-upnp-org:service:ContentDirectory:1</serviceType>
+				<serviceId>urn:upnp-org:serviceId:ContentDirectory</serviceId>
+				<controlURL>/smp_4_</controlURL>
+				<eventSubURL>/smp_5_</eventSubURL>
+				<SCPDURL>/smp_3_</SCPDURL>
+			</service>
+			<service>
+				<serviceType>urn:schemas-upnp-org:service:ConnectionManager:1</serviceType>
+				<serviceId>urn:upnp-org:serviceId:ConnectionManager</serviceId>
+				<controlURL>/smp_7_</controlURL>
+				<eventSubURL>/smp_8_</eventSubURL>
+				<SCPDURL>/smp_6_</SCPDURL>
+			</service>
+		</serviceList>
+		<sec:deviceID>SHCOHHCD7X574</sec:deviceID>
+	</device>
+</root>

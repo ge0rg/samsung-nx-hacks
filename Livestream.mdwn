@@ -1,0 +1,31 @@
+## What's known about livestream on NX camera
+
+Samsung NX wifi cameras are capable of broadcasting live stream to the remote client. To access that stream there are 2 URLs:
+	http://192.168.107.1:7679/livestream.avi
+	http://192.168.107.1:7679/qvga_livestream.avi
+of high and low quality.
+However, they are not standard for any stock media playing software and media playing API-s alike.
+The only software that is capable of receiving that stream is ffplay from ffmpeg package.
+
+The problem is about 2 things:
+ * HTTP 206 error while accessing to the stream
+ * RIFF header of the incoming video.
+The w3c states that HTTP 206 - partical content, means that there should be a range defined by the request, but that seems not the case with continuous video stream.
+The problem of 206th error might be resolved by means of establishing proxy that passes
+    HTTP/1.1 200 OK
+to the client instead of error. That at least was a case with VLC media player, but no other player still is that capable to stream contents. Which leads us to the second problem: zero length.
+Definitely, the stream is continuous, so it can't have a length. However there might be a trick to redefine the header and pass only the part of the video, then passing new header and new chunk of video etc.
+Here's how original header of stream file looks like:
+RIFF ('AVI '
+      LIST ('hdrl'
+			'avih' 56 0 0 0 272 0 0 1 0 640 480)
+      LIST ('strl'
+			'strh' 56 'vids' 'H264 ' 0 0 0 0 1001 30000 0 0 1048576 10000 921600)
+     ...
+Redefining zeros in positions 2,3,6 of avih header (counting from 'avih') and 11th of strh (counting from 'strh') which are dwMicroSecPerFrame, dwMaxBytesPerSec, dwTotalFrames, dwLength subsequently according to a header description from [Microsoft](https://msdn.microsoft.com/en-us/library/windows/desktop/dd318189%28v=vs.85%29.aspx) to some meaningful values would possibly define a range for video stream and make it viewable on stock media players and available for various API-s as well as preventing screen tearing that plagues VLC.
+Also as ffplay works, maybe it would be better to port it to various platforms and call it a day.
+
+developing..
+
+## Additional topics
+ * [Connecting as remote viewfinder to NX camera](https://github.com/Nikolas-LFDesigns/samsung-nx-hacks/blob/master/RVF.mdwn)
