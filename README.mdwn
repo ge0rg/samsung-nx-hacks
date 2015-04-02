@@ -18,17 +18,19 @@ Supported models:
  * Samsung NX300M ([downgrade to 1.11 required](http://lemmster.de/auto-backup-from-nx300-via-ftp.html#comments))
  * Samsung NX2000 ([reported by ostkind](https://op-co.de/blog/posts/rooting_the_nx300/#comment-3476567f386e5ee0d5116e14ad28f6e0))
 
+ * Samsung NX3000 (see special section in wiki)
+ 
 Probably supported (testers needed):
 
  * Samsung NX1 (requires a really brave volunteer :scream:)
  * Samsung NX30
  * Samsung NX200
+ * More? Report to us! :scream:
 
 Probably incompatible:
 
  * Samsung Galaxy NX
  * Samsung NX210
- * Samsung NX3000
 
 ## Further Reading
 
