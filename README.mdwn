@@ -22,10 +22,9 @@ Supported models:
 
  * Samsung NX3000 (see special section in wiki)
  
-Probably supported (testers needed):
+Probably supported (based on firmware file sizes; testers needed):
 
  * Samsung NX30
- * Samsung NX200
  * More? Report to us! :scream:
 
 Supported by a different project:
@@ -35,7 +34,14 @@ Supported by a different project:
 Probably incompatible:
 
  * Samsung Galaxy NX
+ * Samsung NX mini
+ * Samsung NX1000
  * Samsung NX210
+ * Samsung NX200
+
+Absolutely incompatible:
+
+ * Samsung NX5/NX10 (16MB firmware file, maybe related to Smart TVs of the late 2000s? "SAMSUNG (R) Core SW Platform 2.0 for CSP 1.1")
 
 ## Further Reading
 
