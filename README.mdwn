@@ -14,34 +14,25 @@ your nose.**
 
 ## Device Support
 
-Supported models:
+| Model     |Linux| Firmware | Remarks |
+|:---------:|:---:|---------:|---------|
+|Galaxy NX  | ❌  | | Android |
+| | | | |
+|NX5 / NX10 / NX11 | ❌   | 15.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
+|NX100      | ❌  | 28.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
+| | | | |
+|NX20 / NX200 / NX210 | ❌   | ~73-102MB  | VXWorks copyright in firmware |
+|NX1000 / NX1100  | ❌   | ~102MB  | VXWorks copyright in firmware |
+| | | | |
+|NX300      | ✅  | ~324MB | based on [Tizen 1.0](https://www.dpreview.com/forums/post/52508114) |
+|NX2000     | ✅  | ~329MB | [reported by ostkind](https://op-co.de/blog/posts/rooting_the_nx300/#comment-3476567f386e5ee0d5116e14ad28f6e0) |
+|NX300M     | ✅  | ~316MB | [downgrade to 1.11 required](http://lemmster.de/auto-backup-from-nx300-via-ftp.html#comments) |
+|NX30       | ✅? | ~329MB | needs to be tested |
+|NX3000     | ?   | ~129MB | see special section in wiki |
+|NX mini    | ?   | ~129MB | untested, unknown |
+| | | | |
+|NX1 / NX500 | ✅ | ~335MB | Dedicated [Samsung NX1 and NX500](https://github.com/ottokiksmaler/nx500_nx1_modding) project |
 
- * Samsung NX300
- * Samsung NX300M ([downgrade to 1.11 required](http://lemmster.de/auto-backup-from-nx300-via-ftp.html#comments))
- * Samsung NX2000 ([reported by ostkind](https://op-co.de/blog/posts/rooting_the_nx300/#comment-3476567f386e5ee0d5116e14ad28f6e0))
-
- * Samsung NX3000 (see special section in wiki)
- 
-Probably supported (based on firmware file sizes; testers needed):
-
- * Samsung NX30
- * More? Report to us! :scream:
-
-Supported by a different project:
-
-* [Samsung NX1 and NX500](https://github.com/ottokiksmaler/nx500_nx1_modding)
-
-Probably incompatible:
-
- * Samsung Galaxy NX
- * Samsung NX mini
- * Samsung NX1000
- * Samsung NX210
- * Samsung NX200
-
-Absolutely incompatible:
-
- * Samsung NX5/NX10 (16MB firmware file, maybe related to Smart TVs of the late 2000s? "SAMSUNG (R) Core SW Platform 2.0 for CSP 1.1")
 
 ## Further Reading
 
