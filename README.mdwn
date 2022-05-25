@@ -27,8 +27,8 @@ your nose.**
 |NX300      | ✅  | ~324MB | working, based on [Tizen 1.0](https://www.dpreview.com/forums/post/52508114) |
 |NX2000     | ✅  | ~329MB | working, as [reported by ostkind](https://op-co.de/blog/posts/rooting_the_nx300/#comment-3476567f386e5ee0d5116e14ad28f6e0) |
 |NX300M     | ✅  | ~316MB | [downgrade to 1.11 required](http://lemmster.de/auto-backup-from-nx300-via-ftp.html#comments) |
-|NX30       | ✅? | ~329MB | [script execution and telnted working](https://github.com/ge0rg/samsung-nx-hacks/issues/24) |
-|NX3000     | ?   | ~129MB | untested, unknown |
+|NX30       | ✅  | ~329MB | [script execution and telnted working](https://github.com/ge0rg/samsung-nx-hacks/issues/24) |
+|NX3000 / NX3300 | ?   | ~129MB | untested, unknown |
 |NX mini    | ?   | ~129MB | untested, unknown |
 | | | | |
 |NX1 / NX500 | ✅ | ~335MB | working through [Samsung NX1 and NX500](https://github.com/ottokiksmaler/nx500_nx1_modding) project |
