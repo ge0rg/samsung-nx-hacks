@@ -14,25 +14,26 @@ your nose.**
 
 ## Device Support
 
-| Model     |Linux| Firmware | Remarks / Scripting |
-|:---------:|:---:|---------:|---------|
-|Galaxy NX  | ❌  | | Android |
+| Model     | CPU   | Linux| Firmware | Remarks / Scripting |
+|:---------:|:-----:|:---:|---------:|---------|
+|Galaxy NX  |DRIMeIV| ❌  | | Android + DRIMeIV dual-CPU |
 | | | | |
-|NX5 / NX10 / NX11 | ❌   | 15.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
-|NX100      | ❌  | 28.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
+|NX5 / NX10 / NX11 |DRIMe| ❌   | 15.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
+|NX100      |DRIMe2?| ❌  | 28.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
 | | | | |
-|NX20 / NX200 / NX210 | ❌   | ~73-102MB  | VXWorks copyright in firmware |
-|NX1000 / NX1100  | ❌   | ~102MB  | VXWorks copyright in firmware |
+|NX20 / NX200 / NX210 |DRIMe? | ❌   | ~73-102MB  | VXWorks copyright in firmware |
+|NX1000 / NX1100  |DRIMe? | ❌   | ~102MB  | VXWorks copyright in firmware |
 | | | | |
-|NX300      | ✅  | ~324MB | working, based on [Tizen 1.0](https://www.dpreview.com/forums/post/52508114) |
-|NX2000     | ✅  | ~329MB | working, as [reported by ostkind](https://op-co.de/blog/posts/rooting_the_nx300/#comment-3476567f386e5ee0d5116e14ad28f6e0) |
-|NX300M     | ✅  | ~316MB | [downgrade to 1.11 required](http://lemmster.de/auto-backup-from-nx300-via-ftp.html#comments) |
-|NX30       | ✅  | ~329MB | [script execution and telnted working](https://github.com/ge0rg/samsung-nx-hacks/issues/24) |
+|NX300      |DRIMeIV| ✅  | ~324MB | working, based on [Tizen 1.0](https://www.dpreview.com/forums/post/52508114) |
+|NX2000     |DRIMeIV| ✅  | ~329MB | working, as [reported by ostkind](https://op-co.de/blog/posts/rooting_the_nx300/#comment-3476567f386e5ee0d5116e14ad28f6e0) |
+|NX300M     |DRIMeIV| ✅  | ~316MB | [downgrade to 1.11 required](http://lemmster.de/auto-backup-from-nx300-via-ftp.html#comments) |
+|NX30       |DRIMeIV| ✅  | ~329MB | [script execution and telnted working](https://github.com/ge0rg/samsung-nx-hacks/issues/24) |
 | | | | |
-|NX3000 / NX3300 | ?   | ~129MB | untested, unknown |
-|NX mini    | ?   | ~129MB | untested, unknown |
+|NX3000 / NX3300 |M7MU?| ?   | ~129MB | untested, unknown |
+|NX mini    |M7MU   |?   | ~129MB | Fujitsu M7MU, untested, unknown |
+|Galaxy K Zoom |M7MU?|?   | ~6MB | Android + Fujitsu M7MU, untested, unknown |
 | | | | |
-|NX1 / NX500 | ✅ | ~335MB | working through [Samsung NX1 and NX500](https://github.com/ottokiksmaler/nx500_nx1_modding) project |
+|NX1 / NX500 |DRIMeV| ✅ | ~335MB | working through [Samsung NX1 and NX500](https://github.com/ottokiksmaler/nx500_nx1_modding) project |
 
 
 ## Further Reading
