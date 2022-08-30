@@ -29,9 +29,9 @@ your nose.**
 |NX300M     |DRIMeIV| ✅  | ~316MB | [downgrade to 1.11 required](http://lemmster.de/auto-backup-from-nx300-via-ftp.html#comments) |
 |NX30       |DRIMeIV| ✅  | ~329MB | [script execution and telnted working](https://github.com/ge0rg/samsung-nx-hacks/issues/24) |
 | | | | |
-|NX3000 / NX3300 |M7MU?| ?   | ~129MB | untested, unknown |
-|NX mini    |M7MU   |?   | ~129MB | Fujitsu M7MU, untested, unknown |
-|Galaxy K Zoom |M7MU?|?   | ~6MB | Android + Fujitsu M7MU, untested, unknown |
+|NX3000 / NX3300 |M7MU| ❌  | ~129MB | [Fujitsu M7MU](https://github.com/ge0rg/samsung-nx-hacks/wiki/NX3000-Hardware-Information) (Milbeaut MB86S22A), not running Linux |
+|NX mini    |M7MU   | ❌  | ~129MB | Fujitsu M7MU, not running Linux |
+|Galaxy K Zoom |M7MU| ❌  | ~6MB | Android + Fujitsu M7MU, not running Linux on the M7MU |
 | | | | |
 |NX1 / NX500 |DRIMeV| ✅ | ~335MB | working through [Samsung NX1 and NX500](https://github.com/ottokiksmaler/nx500_nx1_modding) project |
 
