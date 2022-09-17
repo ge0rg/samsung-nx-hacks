@@ -22,7 +22,7 @@ your nose.**
 |NX100      |DRIMe2?| ❌  | 28.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
 | | | | |
 |NX20 / NX200 / NX210 |DRIMe? | ❌   | ~73-102MB  | VXWorks copyright in firmware |
-|NX1000 / NX1100  |DRIMe? | ❌   | ~102MB  | VXWorks copyright in firmware |
+|NX1000 / NX1100  |DRIMeIII | ❌   | ~102MB  | VXWorks copyright in firmware, CPU is labeled "S1219 ARM N4AK9C" |
 | | | | |
 |NX300      |DRIMeIV| ✅  | ~324MB | working, based on [Tizen 1.0](https://www.dpreview.com/forums/post/52508114) |
 |NX2000     |DRIMeIV| ✅  | ~329MB | working, as [reported by ostkind](https://op-co.de/blog/posts/rooting_the_nx300/#comment-3476567f386e5ee0d5116e14ad28f6e0) |
