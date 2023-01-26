@@ -16,7 +16,7 @@ your nose.**
 
 | Model     | CPU   | Linux| Firmware | Remarks / Scripting |
 |:---------:|:-----:|:---:|---------:|---------|
-|Galaxy NX  |DRIMeIV| ❌  | | Android + DRIMeIV dual-CPU |
+|Galaxy NX  |DRIMeIV| ✅  | | Android + DRIMeIV dual-CPU, with stripped down Debian on the DRIMeIV |
 | | | | |
 |NX5 / NX10 / NX11 |DRIMeII| ❌   | 15.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
 |NX100      |DRIMeII| ❌  | 28.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
