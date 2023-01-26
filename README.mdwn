@@ -18,10 +18,10 @@ your nose.**
 |:---------:|:-----:|:---:|---------:|---------|
 |Galaxy NX  |DRIMeIV| ❌  | | Android + DRIMeIV dual-CPU |
 | | | | |
-|NX5 / NX10 / NX11 |DRIMe| ❌   | 15.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
-|NX100      |DRIMe2?| ❌  | 28.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
+|NX5 / NX10 / NX11 |DRIMeII| ❌   | 15.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
+|NX100      |DRIMeII| ❌  | 28.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
 | | | | |
-|NX20 / NX200 / NX210 |DRIMe? | ❌   | ~73-102MB  | VXWorks copyright in firmware |
+|NX20 / NX200 / NX210 |DRIMeIII | ❌   | ~73-102MB  | VXWorks copyright in firmware |
 |NX1000 / NX1100  |DRIMeIII | ❌   | ~102MB  | VXWorks copyright in firmware, CPU is labeled "S1219 ARM N4AK9C" |
 | | | | |
 |NX300      |DRIMeIV| ✅  | ~324MB | working, based on [Tizen 1.0](https://www.dpreview.com/forums/post/52508114) |
