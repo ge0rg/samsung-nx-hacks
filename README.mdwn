@@ -52,6 +52,7 @@ NX300 firmware extensions and compilation:
  * [Cross-compile kernel module (ext2) for Samsung nx300 on Ubuntu 14.04](http://www.lemmster.de/cross-compile-kernel-module-samsung-nx300-ubnut-14.04.html)
  * [(NX300) DIY Firmware](https://sites.google.com/site/nxcryptophotography/diy-firmware)
  * [Samsung NX300: Dissecting a Hacked Firmware](https://www.snaums.de/fotografie/samsung-nx300-disecting-a-hacked-firmware.html)
+* [Intervalometer and charge&shoot mod](https://github.com/HausnerR/nx300-hacks)
  
 Software projects not specific to the NX300:
 
