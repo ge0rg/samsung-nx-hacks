@@ -25,15 +25,15 @@ FW_IMAGES = ["vImage", "D4_IPL.bin", "D4_PNLBL.bin", "uImage", "platform.img"]
 
 parser = ArgumentParser()
 parser.add_argument('filenames', metavar='FILE.bin', nargs='+',
-                    help='files analyze / extract')
+                    help='firmware file to analyze / extract')
 parser.add_argument('-p', '--partitions',
                     action='store_true', dest='partitions', default=False,
-                    help='print partition headers')
+                    help='print detailed partition information')
 parser.add_argument('-x', '--extract',
                     action='store_true', dest='extract', default=False,
-                    help='extract partitions into new sub-directory ./FILE/')
+                    help='extract partitions into sub-directory ./FILE/')
 parser.add_argument('-o', '--output', dest='output', default=None,
-                    help='extract to given directory instead of one created based on filename', metavar='DIR')
+                    help='override output directory for partitions', metavar='DIR')
 args = parser.parse_args()
 
 def c_str(val):
@@ -97,14 +97,14 @@ def dump_fw_info(filename):
 
             fw = load_block(f, P_FWFILE_META, FwFileMeta)
             if fw.magic != SLP_MAGIC:
-                raise Exception(f"bad magic")
+                raise Exception(f"incorrect magic")
             parts = [load_image_block(f, fn) for fn in FW_IMAGES]
             assert_part0_magic(parts)
             if fw.has_pcache == 1:
                 has_pcache = True
                 f.seek(fw.pcache_offset)
                 parts.append(load_image_block(f, "pcache.list", v2))
-            if parts[1].magic != 0x7fffffff:
+            if fw.has_pcache > 1 or parts[1].magic != 0x7fffffff:
                 parts = load_v2_parts(f, fw.has_pcache)
                 assert_part0_magic(parts)
                 v2 = True
@@ -118,7 +118,6 @@ def dump_fw_info(filename):
                 print(f"    {p.img_offset:10d} {p.img_len:10d} {p.crc32:8x} {p.magic:8x} {c_str(p.extra)} {p.filename}")
         if args.extract:
             extract_files(filename, f, parts)
-
 
 
 for filename in args.filenames:
