@@ -57,7 +57,9 @@ NX300 firmware extensions and compilation:
 Software projects not specific to the NX300:
 
  * [nx-remote-controller-mod: Remote Controller Mod for NX1/NX500/NX300](https://mewlips.github.io/nx-remote-controller-mod/) - very much recommended!
+* [PC-Autobackup](https://github.com/warwickh/pc-autobackup) - This is a complete reimplimantation of PC-Autobackup in python for Linux and Mac. 
  * Overview of original [camera firmware](https://matteverglade.com/cameras/nx-firmware/) and [lens firmware](https://matteverglade.com/lenses/nx-firmware/) versions
+* [NXFiles](nxfiles.nx.tc) A complete host of all software, manuals, firmware, OSS releases and much more regarding most if not all Samsung NX cameras
 
 Hardware hacks:
  * [Samsung NX Mount Protocol](http://blueringlab.com/2016/03/samsung-nx-mount-protocol-general/)
