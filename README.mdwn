@@ -26,7 +26,7 @@ your nose.**
 | | | | |
 |NX300      |DRIMeIV| ✅  | ~324MB | working, based on [Tizen 1.0](https://www.dpreview.com/forums/post/52508114) |
 |NX2000     |DRIMeIV| ✅  | ~329MB | working, as [reported by ostkind](https://op-co.de/blog/posts/rooting_the_nx300/#comment-3476567f386e5ee0d5116e14ad28f6e0) |
-|NX300M     |DRIMeIV| ✅  | ~316MB | [downgrade to 1.10 required](https://github.com/ge0rg/samsung-nx-hacks/wiki/NX300M-autoexec.sh) |
+|NX300M     |DRIMeIV| ✅  | ~316MB | Requires [modified firmware](https://github.com/fritzchentastig/NX300M-MFW/) |
 |NX30       |DRIMeIV| ✅  | ~329MB | [script execution and telnted working](https://github.com/ge0rg/samsung-nx-hacks/issues/24) |
 | | | | |
 |NX3000 / NX3300 |M7MU| ❌  | ~129MB | [Fujitsu M7MU](https://github.com/ge0rg/samsung-nx-hacks/wiki/NX3000-Hardware-Information) (Milbeaut MB86S22A), not running Linux |
