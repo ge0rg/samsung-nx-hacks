@@ -8,9 +8,12 @@
 #
 # THIS CODE IS VERY UGLY! WASH YOUR EYES WITH SOAP, THEN DELETE FILE!
 
+import os
 import struct
 import sys
 from argparse import ArgumentParser
+from collections import OrderedDict
+from math import ceil
 
 P_TOP = "<IIIII"            # +0x0000,  20 bytes (file offsets) little-endian
 P_SDRAM = "144s"            # +0x0014, 144 bytes (array?)
@@ -22,6 +25,9 @@ P_USER_CODE = "18s18s18s"   # +0x0234,  54 bytes (memory initialization?!)
 parser = ArgumentParser()
 parser.add_argument('filenames', metavar='FILE.bin', nargs='+',
                     help='firmware file to analyze / extract')
+parser.add_argument('-p', '--partitions',
+                    action='store_true', dest='partitions', default=False,
+                    help='print detailed partition information')
 parser.add_argument('-x', '--extract',
                     action='store_true', dest='extract', default=False,
                     help='extract partitions')
@@ -47,7 +53,7 @@ def stringify(val):
         except (UnicodeDecodeError, ValueError):
             return "`"  + " ".join(f"{byte:02x}" for byte in val) + "`"
 
-def dump_block(f, pack, names=None):
+def dump_block(f, pack, names=None, infostore=None):
     data = f.read(struct.calcsize(pack))
     s = struct.Struct(pack).unpack_from(data)
     if names:
@@ -56,26 +62,68 @@ def dump_block(f, pack, names=None):
                 print_row(n, "`0x%x` (%d)" % (v, v))
             else:
                 print_row(n, stringify(v))
+            if infostore is not None:
+                infostore[n] = v
     else:
         print(s)
 
-def dump_sections(f, pack):
+def dump_section_info(f, pack, infostore):
     data = f.read(struct.calcsize(pack))
     s = struct.Struct(pack).unpack_from(data)
     name = "section_info"
-    val = "`"  + " ".join(f"{ptr:08x}" for ptr in s) + "`"
+    count = s[0]
+    numbers = s[1:1+2*count:2]
+    lengths = s[2:1+2*count:2]
+    val = "`"  + " ".join(f"{n}:{l:08x}" for n, l in zip(numbers, lengths)) + "`"
     print_row(name, val)
+    if infostore is not None:
+        infostore[name] = s
 
+def dump_partitions(info, total_size):
+    partitions = []
+    partitions.append(("boot", info['block_size'], info['writer_load_size']))
+    block_size = 0x200 #info['block_size']
+    count = info['section_info'][0]
+    numbers = info['section_info'][1:1+2*count:2]
+    lengths = info['section_info'][2:1+2*count:2]
+    offset = info['offset_code']
+    for i, l in zip(numbers, lengths):
+        partitions.append((f"chunk-{i:02d}", offset, l))
+        offset += ceil(l / block_size) * block_size
+    partitions.append(("sf_resource", offset, total_size-offset))
+    if args.partitions:
+        print(f"\n{len(partitions)} partitions, ~ {sum(lengths)}/{info['code_size']} bytes:\n")
+        for p in partitions:
+            if args.table:
+                print(f"| {p[1]:08x} | {p[2]:9d} | {p[0]} |")
+            else:
+                print(f"{p[1]:08x} {p[2]:9d} {p[0]}")
+    return partitions
+
+def extract_file(f, fn_out, offset, size):
+    print(f"Extracting from {offset:08x}: {size:8d} bytes -> {fn_out}")
+    f_out = open(fn_out, "wb")
+    os.sendfile(f_out.fileno(), f.fileno(), offset, size)
+    f_out.close()
+
+def extract_files(f, filename, partitions):
+    dst = os.path.splitext(os.path.basename(filename))[0]
+    os.makedirs(dst, exist_ok=True)
+    for fn, offset, size in partitions:
+        extract_file(f, f"{dst}/{fn}.bin", offset, size)
 
 def dump_fw_info(filename):
     with open(filename, "rb") as f:
-        dump_block(f, P_TOP, ["block_size", "writer_load_size", "write_code_entry", "sdram_param_size", "nand_param_size"])
-        dump_block(f, P_SDRAM, ["sdram_data"])
-        dump_block(f, P_NAND, ["nand_data"])
-        dump_block(f, P_CODE, ["code_size", "offset_code", "version1", "log", "version2", "model"])
-        dump_sections(f, P_SECTION)
-        dump_block(f, P_USER_CODE, ["pdr", "ddr", "epcr"])
-
+        info = OrderedDict()
+        dump_block(f, P_TOP, ["block_size", "writer_load_size", "write_code_entry", "sdram_param_size", "nand_param_size"], info)
+        dump_block(f, P_SDRAM, ["sdram_data"], info)
+        dump_block(f, P_NAND, ["nand_data"], info)
+        dump_block(f, P_CODE, ["code_size", "offset_code", "version1", "log", "version2", "model"], info)
+        dump_section_info(f, P_SECTION, info)
+        dump_block(f, P_USER_CODE, ["pdr", "ddr", "epcr"], info)
+        p = dump_partitions(info, os.fstat(f.fileno()).st_size)
+        if args.extract:
+            extract_files(f, filename, p)
 
 for filename in args.filenames:
     dump_fw_info(filename)
