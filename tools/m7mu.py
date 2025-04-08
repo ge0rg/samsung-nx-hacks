@@ -90,6 +90,9 @@ def dump_partitions(info, total_size):
     for i, l in zip(numbers, lengths):
         partitions.append((f"chunk-{i:02d}", offset, l))
         offset += ceil(l / block_size) * block_size
+    # 0x800 for SF_RESOURCE!?
+    block_size = 0x800
+    offset = ceil(offset / block_size) * block_size
     partitions.append(("sf_resource", offset, total_size-offset))
     if args.partitions:
         print(f"\n{len(partitions)} partitions, ~ {sum(lengths)}/{info['code_size']} bytes:\n")
