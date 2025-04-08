@@ -10,8 +10,7 @@
 
 import struct
 import sys
-
-PRINT_TABLE = True
+from argparse import ArgumentParser
 
 P_TOP = "<IIIII"            # +0x0000,  20 bytes (file offsets) little-endian
 P_SDRAM = "144s"            # +0x0014, 144 bytes (array?)
@@ -20,8 +19,19 @@ P_CODE = "II5s12s7s13s"     # +0x01A3,  45 bytes (code size, version strings)
 P_SECTION = "25I"           # +0x01D0, 100 bytes (offsets and section numbers)
 P_USER_CODE = "18s18s18s"   # +0x0234,  54 bytes (memory initialization?!)
 
+parser = ArgumentParser()
+parser.add_argument('filenames', metavar='FILE.bin', nargs='+',
+                    help='firmware file to analyze / extract')
+parser.add_argument('-x', '--extract',
+                    action='store_true', dest='extract', default=False,
+                    help='extract partitions')
+parser.add_argument('-t', '--table',
+                    action='store_true', dest='table', default=False,
+                    help='format output as markdown table')
+args = parser.parse_args()
+
 def print_row(name, value):
-    if PRINT_TABLE:
+    if args.table:
         print("| %-30s | %s |" % (name, value))
     else:
         print("%-30s %s" % (name, value))
@@ -67,5 +77,5 @@ def dump_fw_info(filename):
         dump_block(f, P_USER_CODE, ["pdr", "ddr", "epcr"])
 
 
-for filename in sys.argv[1:]:
+for filename in args.filenames:
     dump_fw_info(filename)
