@@ -12,11 +12,14 @@ WITHOUT ANY WARRANTY. The authors take no responsibility for deleting your
 baby photographs, bricking your expensive camera or making demons fly out of
 your nose.**
 
-## Device Support
+Check the [wiki](https://github.com/ge0rg/samsung-nx-hacks/wiki) for reverse
+engineered documentation!
+
+## Device Support for Linux/code execution
 
 | Model     | CPU   | Linux| Firmware | Remarks / Scripting |
 |:---------:|:-----:|:---:|---------:|---------|
-|Galaxy NX  |DRIMeIV| ✅  | | Android + DRIMeIV dual-CPU, with stripped down Debian on the DRIMeIV |
+|Galaxy NX  |DRIMeIV| ✅  | | Android + DRIMeIV dual-CPU, with stripped down Debian on the DRIMeIV (no scripting yet) |
 | | | | |
 |NX5 / NX10 / NX11 |DRIMeII| ❌   | 15.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
 |NX100      |DRIMeII| ❌  | 28.5MB   | Paths in firmware hint to the [µITRON](https://en.wikipedia.org/wiki/ITRON_project) project |
@@ -34,11 +37,12 @@ your nose.**
 |Galaxy K Zoom |M7MU| ❌  | ~6MB | Android + Fujitsu M7MU, not running Linux on the M7MU |
 | | | | |
 |NX1 / NX500 |DRIMeV| ✅ | ~335MB | working through [Samsung NX1 and NX500](https://github.com/ottokiksmaler/nx500_nx1_modding) project |
+|Gear360|DRIMeVs| ✅ | ~216MB-321MB | limited working through [Gear 360 modding](https://github.com/ottokiksmaler/gear360_modding) project |
 
 
 ## Further Reading
 
-This collection is based on the following articles:
+This project (and code execution on the NX300) is based on the following articles:
 
  * [Hacking the Samsung NX300 'Smart' Camera](http://op-co.de/blog/posts/hacking_the_nx300/)
  * [Hacking the Samsung NX300, part 2: Get Root!](http://op-co.de/blog/posts/rooting_the_nx300/)
@@ -57,6 +61,7 @@ NX300 firmware extensions and compilation:
 Software projects not specific to the NX300:
 
  * [nx-remote-controller-mod: Remote Controller Mod for NX1/NX500/NX300](https://mewlips.github.io/nx-remote-controller-mod/) - very much recommended!
+* [samsung-nx-emailservice](https://github.com/ge0rg/samsung-nx-emailservice/) - re-implementation of the "social network service" API used by Samsung WiFi cameras to upload pictures and videos
 * [PC-Autobackup](https://github.com/warwickh/pc-autobackup) - This is a complete reimplimantation of PC-Autobackup in python for Linux and Mac. 
  * Overview of original [camera firmware](https://matteverglade.com/cameras/nx-firmware/) and [lens firmware](https://matteverglade.com/lenses/nx-firmware/) versions
 * [NXFiles](nxfiles.nx.tc) A complete host of all software, manuals, firmware, OSS releases and much more regarding most if not all Samsung NX cameras
