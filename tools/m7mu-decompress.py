@@ -13,6 +13,12 @@ parser.add_argument('-o', '--output',
 parser.add_argument('-O', '--offset',
                     type=int, dest='offset', default=2,
                     help='offset in input file to start decoding at')
+parser.add_argument('-C', '--count',
+                    type=int, dest='count', default=0,
+                    help='number of blocks to decompress')
+parser.add_argument('-W', '--window',
+                    type=int, dest='window', default=8192,
+                    help='window size for decompression')
 parser.add_argument('-d', '--debug',
                     action='store_true', dest='debug', default=False,
                     help='emit debug output')
@@ -25,6 +31,12 @@ def x(ba):
     '''helper to output hex/readable output'''
     return ba.__repr__()
 
+def xb(ba):
+    '''helper to output hex/readable output'''
+    bax = bytes.hex(ba)
+    bab = "'".join([format(int(nibble, 16), "04b") for nibble in bax])
+    return f"0x{bax}={bab}b"
+
 def dprint(*a):
     '''debug print'''
     if args.debug:
@@ -36,7 +48,7 @@ def decode_block(f, f_out=None):
     flag = struct.unpack(">H", flag_bytes)[0]
     bitmask = format(flag, "016b")
     bitmask1 = bitmask + "1" # used to find() streaks of 0s
-    dprint(f"{ofs:08x}: bitmask {x(flag_bytes)} {bitmask}")
+    dprint(f"{ofs:08x}: bitmask {xb(flag_bytes)}")
     i = 0
     while i < 16:
         bit = bitmask[i]
@@ -54,13 +66,14 @@ def decode_block(f, f_out=None):
             token_len = 3 + (ofshi_len & 0x07)
             offset = ((ofshi_len >> 3) << 8) + ofslo
             #TODO: can we use this to validate "good" vs. bad offsets?
-            #if offset > len(window):
-            #    raise IndexError(f"trying to look back {offset} bytes in a {len(window)}-sized window")
-            dprint(f"    token   {x(mask)} {token_len} at -{offset:x}")
+            if offset > len(window):
+                raise IndexError(f"trying to look back {offset} bytes in a {len(window)}-sized window")
+            dprint(f"    token   {xb(mask)}: {token_len} at -{offset}")
             lookup = bytearray()
             lookup.extend(window[-offset:-offset+token_len])
-            window.extend(lookup)
             dprint(f"        --> {x(bytes(lookup))}")
+            #dprint(f"        --> {x(bytes(lookup))} -- {x(window[-offset+token_len:-offset+token_len+10])}")
+            window.extend(lookup)
             if f_out:
                 f_out.write(bytes(lookup))
             i += 1
@@ -73,5 +86,9 @@ if args.fn_out:
 else:
     f_out = None
 
-while True:
-    decode_block(f_in, f_out)
+if args.count:
+    for i in range(args.count):
+        decode_block(f_in, f_out)
+else:
+    while True:
+        decode_block(f_in, f_out)
