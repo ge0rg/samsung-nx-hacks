@@ -125,6 +125,10 @@ def decode_block(f, f_out=None, max_in=None):
             ofshi_len, ofslo = struct.unpack("2B", mask)
             token_len = 3 + (ofshi_len & ((1 << OFS_BITS)-1))
             offset = ((ofshi_len >> OFS_BITS) << 8) + ofslo
+            if token_len == 3 and offset == 0:
+                dprint(f"    Encountered off-by-two 0x0000 token, rewinding to EOB-2!")
+                f.seek(ofs+max_in-2)
+                return out_len
             if token_len == 10:
                 # variable length token with additional length bytes: read until != 255
                 vlb = 255
