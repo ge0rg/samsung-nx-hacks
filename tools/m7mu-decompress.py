@@ -17,9 +17,6 @@ parser.add_argument('-o', '--output',
 parser.add_argument('-O', '--offset',
                     type=auto_int, dest='offset', default=0,
                     help='offset in input file to start decoding at')
-parser.add_argument('-C', '--count',
-                    type=auto_int, dest='count', default=0,
-                    help='number of blocks to decompress')
 parser.add_argument('-W', '--window',
                     type=auto_int, dest='window', default=-1,
                     help='window size for decompression (<0 - uncompressed stream; >0 - ring buffer)')
@@ -170,7 +167,7 @@ def decode_range(f, f_out=None):
     range_len = struct.unpack(">H", range_len_b)[0]
     if range_len == 0x0000:
         dprint(f"*** {f_pos:08x} EOF marker {x(range_len_b)} ***")
-        raise struct.error("TODO hax")
+        return False
     elif range_len >= 0x8000:
         # copy uncompressed section
         data_len = (range_len & 0x7fff)-2
@@ -185,7 +182,7 @@ def decode_range(f, f_out=None):
         f.seek(f_pos + data_len + 2)
         if data_len == 0x6000:
             # skip missing EOB
-            return
+            return True
     else:
         dprint(f"*** {f_pos:08x} Decoding compressed section of {range_len} bytes ***")
         next_offset = f_pos + range_len
@@ -203,16 +200,19 @@ def decode_range(f, f_out=None):
     eob = f.read(2)
     if eob != b"\x00\x00":
         raise IndexError(f"{f_pos:08x} Boom! Expected EOB, got {x(eob)}")
+    return True
 
-f = open(args.filename, "rb")
-f.seek(args.offset)
-if args.fn_out:
-    f_out = open(args.fn_out, "wb")
-else:
-    f_out = None
+def decode_file(filename):
+    f = open(filename, "rb")
+    f.seek(args.offset)
+    if args.fn_out:
+        f_out = open(args.fn_out, "wb")
+    else:
+        f_out = None
 
-try:
-    while True:
-        decode_range(f, f_out)
-except struct.error:
-    pass
+    more_data = True
+    while more_data:
+        more_data = decode_range(f, f_out)
+
+if __name__ == "__main__":
+    decode_file(args.filename)
