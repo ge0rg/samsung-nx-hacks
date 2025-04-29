@@ -170,19 +170,14 @@ def decode_range(f, f_out=None):
         return False
     elif range_len >= 0x8000:
         # copy uncompressed section
-        data_len = (range_len & 0x7fff)-2
-        if data_len == 0x5ffe:
-            # special case (range_len=0xe000) = max length block with no EOB
-            data_len += 2
+        data_len = (range_len & 0x7fff)
         dprint(f"*** {f_pos:08x} Copying uncompressed section of {data_len} bytes ***")
-        if range_len == 0x8000: # special case for Galaxy K Zoom
-            raise IndexError(f"{f_pos:08x} Boom! Unsupported range_len = 0x{range_len:04x}")
         if f_out:
-            os.sendfile(f_out.fileno(), f.fileno(), f_pos+2, data_len)
-        f.seek(f_pos + data_len + 2)
-        if data_len == 0x6000:
-            # skip missing EOB
-            return True
+            data = f.read(data_len)
+            f_out.write(data)
+            window.extend(data)
+        else:
+            f.seek(f_pos + data_len + 2)
     else:
         dprint(f"*** {f_pos:08x} Decoding compressed section of {range_len} bytes ***")
         next_offset = f_pos + range_len
@@ -196,10 +191,10 @@ def decode_range(f, f_out=None):
             #if out_len > range_len:
                 #raise IndexError(f"{f_pos:08x} Boom! Expected {range_len} but end up at {out_len}")
         dprint(f"*** {f_pos:08x} wrote {out_len} bytes")
-    f_pos = f.tell()
-    eob = f.read(2)
-    if eob != b"\x00\x00":
-        raise IndexError(f"{f_pos:08x} Boom! Expected EOB, got {x(eob)}")
+        f_pos = f.tell()
+        eob = f.read(2)
+        if eob != b"\x00\x00":
+            raise IndexError(f"{f_pos:08x} Boom! Expected EOB, got {x(eob)}")
     return True
 
 def decode_file(filename):
