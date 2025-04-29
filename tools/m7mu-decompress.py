@@ -171,6 +171,8 @@ def decode_range(f, f_out=None):
     elif range_len >= 0x8000:
         # copy uncompressed section
         data_len = (range_len & 0x7fff)
+        if range_len == 0x8000:
+            data_len = 0x8000
         dprint(f"*** {f_pos:08x} Copying uncompressed section of {data_len} bytes ***")
         if f_out:
             data = f.read(data_len)
