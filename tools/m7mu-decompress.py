@@ -98,17 +98,14 @@ def decode_block(f, f_out=None, max_in=None):
     out_len = 0
     while i < 16:
         _in = f.tell()-ofs
-        if _in >= max_in:
-            dprint(f"    EOB reached after reading {_in} and writing {out_len} bytes")
-            if _in > max_in:
-                f.seek(ofs+max_in)
-                dprint(f"    EOB rewinding!")
-            return out_len
+        if _in > max_in:
+            raise IndexError(f"{ofs:08x} read {_in} instead of allowed {max_in} bytes")
         bit = bitmask[i]
         if bit == '0':
             # obtain number of consecutive 0 bits in flag -> number of literal bytes
             literal_len = bitmask1.find("1", i) - i
-            literal_len = min(literal_len, max_in-_in)
+            if literal_len > max_in-_in:
+                raise IndexError(f"{ofs:08x} literal has {literal_len} instead of allowed {max_in-_in} bytes")
             literal = f.read(literal_len)
             dprint(f"    literal {x(literal)}")
             window.extend(literal)
@@ -122,9 +119,8 @@ def decode_block(f, f_out=None, max_in=None):
             ofshi_len, ofslo = struct.unpack("2B", mask)
             token_len = 3 + (ofshi_len & ((1 << OFS_BITS)-1))
             offset = ((ofshi_len >> OFS_BITS) << 8) + ofslo
-            if token_len == 3 and offset == 0:
-                dprint(f"    Encountered off-by-two 0x0000 token, rewinding to EOB-2!")
-                f.seek(ofs+max_in-2)
+            if mask == b'\x00\x00':
+                dprint(f"    Encountered EOB 0x0000 token")
                 return out_len
             if token_len == 10:
                 # variable length token with additional length bytes: read until != 255
@@ -174,29 +170,20 @@ def decode_range(f, f_out=None):
         if range_len == 0x8000:
             data_len = 0x8000
         dprint(f"*** {f_pos:08x} Copying uncompressed section of {data_len} bytes ***")
+        data = f.read(data_len)
+        window.extend(data)
         if f_out:
-            data = f.read(data_len)
             f_out.write(data)
-            window.extend(data)
-        else:
-            f.seek(f_pos + data_len + 2)
     else:
         dprint(f"*** {f_pos:08x} Decoding compressed section of {range_len} bytes ***")
         next_offset = f_pos + range_len
         out_len = 0
         while f_pos < next_offset:
-        #while out_len < range_len:
             out_len += decode_block(f, f_out, next_offset - f_pos)
             f_pos = f.tell()
-            if f_pos > next_offset:
+            if f_pos > next_offset + 2:
                 raise IndexError(f"{f_pos:08x} Boom! Read {f_pos-next_offset} bytes beyond {next_offset:08x}")
-            #if out_len > range_len:
-                #raise IndexError(f"{f_pos:08x} Boom! Expected {range_len} but end up at {out_len}")
         dprint(f"*** {f_pos:08x} wrote {out_len} bytes")
-        f_pos = f.tell()
-        eob = f.read(2)
-        if eob != b"\x00\x00":
-            raise IndexError(f"{f_pos:08x} Boom! Expected EOB, got {x(eob)}")
     return True
 
 def decode_file(filename):
