@@ -18,9 +18,11 @@ from math import ceil
 P_TOP = "<IIIII"            # +0x0000,  20 bytes (file offsets) little-endian
 P_SDRAM = "144s"            # +0x0014, 144 bytes (array?)
 P_NAND = "225s"             # +0x00A4, 225 bytes (array? contains code block size - 2)
-P_CODE = "II5s12s7s13s"     # +0x01A3,  45 bytes (code size, version strings)
-P_SECTION = "25I"           # +0x01D0, 100 bytes (offsets and section numbers)
-P_USER_CODE = "18s18s18s"   # +0x0234,  54 bytes (memory initialization?!)
+P_CODE = "II5s12s7s13s"     # +0x0185,  45 bytes (code size, version strings)
+P_CODE_V2 = "II5s12s11s9s"  # variant2  45 bytes (longer version2, shorter model)
+P_SECTION = "25I"           # +0x01B2, 100 bytes (offsets and section numbers)
+P_USER_CODE = "18s18s18s"   # +0x0216,  54 bytes (memory initialization?!)
+P_RESERVED = "<10sI"        # +0x024c, 436 bytes (unknown, contains filesize-20 at 0x256)
 
 parser = ArgumentParser()
 parser.add_argument('filenames', metavar='FILE.bin', nargs='+',
@@ -46,15 +48,18 @@ def print_row(name, value):
 
 def stringify(val):
     try:
-        return '"%s"' % val.decode("ascii")
+        return '"%s"' % val.decode("ascii").strip('\0')
     except UnicodeDecodeError:
         try:
-            return '"%s"' % bytes([b-0x80 for b in val]).decode("ascii")
+            return '"%s"' % bytes([b-0x80 for b in val]).decode("ascii").strip('\0')
         except (UnicodeDecodeError, ValueError):
             return "`"  + " ".join(f"{byte:02x}" for byte in val) + "`"
 
 def dump_block(f, pack, names=None, infostore=None):
     data = f.read(struct.calcsize(pack))
+    return dump_block_data(data, pack, names, infostore)
+
+def dump_block_data(data, pack, names=None, infostore=None):
     s = struct.Struct(pack).unpack_from(data)
     if names:
         for n, v in zip(names, s):
@@ -66,6 +71,17 @@ def dump_block(f, pack, names=None, infostore=None):
                 infostore[n] = v
     else:
         print(s)
+
+def dump_code_info(f, infostore=None):
+    pack = P_CODE
+    data = f.read(struct.calcsize(pack))
+    s = struct.Struct(pack).unpack_from(data)
+    # check first byte of "version1" string for NX (MSB set) or pre-MX (K-Zoom)
+    if s[2][0] > 128:
+        pack = P_CODE_V2
+        s = struct.Struct(pack).unpack_from(data)
+    dump_block_data(data, pack, ["code_size", "offset_code", "version1", "log", "version2", "model"], infostore)
+
 
 def dump_section_info(f, pack, infostore):
     data = f.read(struct.calcsize(pack))
@@ -121,9 +137,10 @@ def dump_fw_info(filename):
         dump_block(f, P_TOP, ["block_size", "writer_load_size", "write_code_entry", "sdram_param_size", "nand_param_size"], info)
         dump_block(f, P_SDRAM, ["sdram_data"], info)
         dump_block(f, P_NAND, ["nand_data"], info)
-        dump_block(f, P_CODE, ["code_size", "offset_code", "version1", "log", "version2", "model"], info)
+        dump_code_info(f, info)
         dump_section_info(f, P_SECTION, info)
         dump_block(f, P_USER_CODE, ["pdr", "ddr", "epcr"], info)
+        dump_block(f, P_RESERVED, ["reserved", "firmware_size"], info)
         p = dump_partitions(info, os.fstat(f.fileno()).st_size)
         if args.extract:
             extract_files(f, filename, p)
