@@ -6,6 +6,9 @@ Live, stable video from a **Samsung NX2000 (firmware 1.18)** into a laptop throu
 a cheap **USB HDMI capture card** (tested with a MacroSilicon `534d:2109`). Usable as a webcam / for live streaming
 with OBS.
 
+> **Current quality: DVD-like, 720×480.** That is the size of the live-view buffer we can show today; the HDMI signal
+> itself is 1080. HD (the camera's 1920×1080 frames) is the next goal, see To do.
+
 Stock NX2000 firmware only uses HDMI to show the photo gallery: when you plug the cable in photo mode it jumps to
 playback. This project gets the **live view** out of it instead.
 
@@ -155,6 +158,9 @@ wrong step can hang the camera until you pull the battery. Use at your own risk.
 
 **Vídeo en vivo de una Samsung NX2000 (firmware 1.18) en una laptop**, por el micro HDMI de la cámara y una
 capturadora HDMI USB. Sirve para transmitir con OBS.
+
+> **Calidad actual: de DVD, 720×480.** Es el tamaño de la imagen en vivo que se puede mostrar hoy (la señal HDMI va
+> a 1080). La calidad HD es el siguiente objetivo.
 
 **Resultado:** encuadre completo, proporciones y colores correctos, fluido, con 0,5–1 s de retraso.
 - Enfoque automático continuo con la lente en **AF**. Funciona, pero mueve el motor sin parar y gasta batería: el
