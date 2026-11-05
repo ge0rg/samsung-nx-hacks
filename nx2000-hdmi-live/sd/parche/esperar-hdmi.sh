@@ -15,6 +15,9 @@ desde=$(wc -l < $F 2>/dev/null); [ -z "$desde" ] && desde=1
 echo "=== $(cut -d' ' -f1 /proc/uptime) esperando el HDMI en $F desde la línea $desde (imagen ${W}x${H})" >> $L
 while true; do
   if tail -n +$desde $F | grep -q "hdmi_w\|__xrr_turn_hdmi_on"; then
+    # Enfoque manual y el interruptor AF/MF en la demo (fase "demo" de parche-mf.pl), lo antes posible, antes de que
+    # lleguen avisos de la lente. / Manual focus with the ring in the demo, as early as possible.
+    [ -e /mnt/mmc/parche/enfoque-manual ] && perl /mnt/mmc/parche/parche-mf.pl $(pidof di-camera-app-nx2000) demo >> $L 2>&1
     sleep 4
     tail -n +$desde $F | grep "hdmi_w\|Selected index\|__xrr_turn_hdmi_on\|Mode [Cc]hange" | cut -c1-120 >> $L
     S=$(tail -n +$desde $F | grep -o "Selected index [0-9]* : [0-9]*x[0-9]*" | tail -1 | grep -o "[0-9]*x[0-9]*$")

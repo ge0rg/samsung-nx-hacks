@@ -12,14 +12,19 @@ with OBS.
 Stock NX2000 firmware only uses HDMI to show the photo gallery: when you plug the cable in photo mode it jumps to
 playback. This project gets the **live view** out of it instead.
 
-**Result:** full framing, correct aspect ratio and colors, smooth (~24–30 fps), ~0.5–1 s latency, no tearing.
-Continuous autofocus works live with the lens AF/MF switch set to AF. It keeps driving the focus motor all the time,
-which drains the battery, so **the goal is manual focus with the lens ring** (see To do).
+**Result:** full framing, correct aspect ratio and colors, smooth (~24–30 fps), no tearing, **~0.3–0.6 s latency**
+with the GStreamer viewer (`laptop/ver-en-vivo-gst.sh`).
+- **Manual focus with the lens ring works live.** With the lens AF/MF switch on MF, the ring focuses and the focus
+  stays where you leave it; the focus motor does not keep running, so it saves battery.
+- **The AF/MF switch works live**: move it to AF and the camera autofocuses continuously (the movie AF, a bit slower
+  than the photo AF and it tends to keep its first focus); move it back to MF and the ring takes over.
+- For autofocus on the center instead of face tracking, use **Program** mode with AF area **Selection AF** (in Smart
+  Auto the camera tracks faces and draws a white box on the output) and **Continuous AF** as AF mode.
+- The demo uses the exposure settings of the current mode (exposure compensation, ISO, metering).
 
 **Limits:**
 - DVD-like quality: the source is the 720×480 live-view buffer;
 - the camera's own screen goes black while streaming;
-- the manual focus ring does not respond;
 - the battery drains fast.
 
 ## How it works
@@ -36,6 +41,20 @@ which drains the battery, so **the goal is manual focus with the lens ring** (se
      picture on capture cards), and sets `stereo-video-format` to 0.
    - It also ignores HDMI disconnect events, and fixes a 3D branch in `__xrr_output_select`.
    - Nothing is written to the camera's flash: the patches live in RAM, and only if the original bytes match.
+   - **Manual focus** (`sd/parche/parche-mf.pl`, with the flag file `parche/enfoque-manual`). When HDMI is plugged
+     in, the demo stops the live view, and that stop sends the lens "electric MF prohibited" (the log prints it as
+     `MFRingEventProhibition 1`). Nothing grants it again, so the ring does nothing.
+     - At boot, `CManualFocus::setMFPremission` in `libcapture-fw-slpcam` is patched so electric MF is always
+       granted. Then the lens moves the focus by itself when the ring turns.
+     - When the demo starts, more patches make the camera ignore the ring notices (`MF_START`, focus position): the
+       capture library no longer restarts the live view in "MF mode", and the user interface no longer draws them.
+     - The stock program already ignores lens notices in the 3D demo (`UI_Event_Callback_Manager_Lens`, "case 3: 3d
+       hdmi liveview"). Making the demo 2D had turned that rule off, and the user interface crashed drawing the icons
+       of an AF/MF change. Now only the switch notices get through, and the icons are skipped.
+     - From the photo screen, an AF change sends `3A_CAF`, which in Program mode only focuses while the shutter is
+       half-pressed. While recording a movie, the same change sends `3A_MOVIEAF`, which starts continuous AF. The
+       demo is the movie pipeline inside, so the switch is routed through that movie path
+       (`UI_Manage_Movie_AF`).
 3. **Mirror** (`sd/parche/espejo-mem.pl`, started by `esperar-hdmi.sh` when the program logs the HDMI mode change).
    - The landscape live-view frames live in a ring of 3 buffers at physical `0xc74fa000 + k·0x8e000` (720×480 image
      at x=40 inside an 800-byte stride, Y then interleaved CbCr 4:2:0). The rear LCD is a portrait 480×800 panel, so
@@ -44,8 +63,10 @@ which drains the battery, so **the goal is manual focus with the lens ring** (se
      one is being written) through `/dev/fb0` ioctls (`DP_IOCTL_TV_VID_SET` / `TV_VID_ADDRESS`).
    - **The demo's HDMI output is interlaced (`1920x1080f`), so the window needs a double stride (1600)**. Without
      it you only see the top half of the picture stretched 2× (it looks zoomed and squeezed).
-4. **Laptop** (`laptop/ver-en-vivo.sh`): crops the 720×480 area at (600,300) from the 1080 signal and enlarges it
-   with its real 3:2 shape, with low-latency `ffmpeg`/`ffplay` options.
+4. **Laptop** (`laptop/ver-en-vivo-gst.sh`): crops the 720×480 area at (600,300) from the 1080 signal and enlarges
+   it with its real 3:2 shape, showing each frame as soon as it arrives (GStreamer, `sync=false`, one-frame leaky
+   queues): ~0.3–0.6 s. `laptop/ver-en-vivo.sh` does the same with `ffmpeg` piped into `ffplay`, but frames pile up
+   between the two programs and it drifted to 2–3 s behind.
 
 ## Requirements
 
@@ -53,26 +74,39 @@ which drains the battery, so **the goal is manual focus with the lens ring** (se
   first).
 - The `nx_cs.adj` trick from [hunkreborn/Samsung-NX2000-Moding-Hack](https://github.com/hunkreborn/Samsung-NX2000-Moding-Hack),
   so the camera runs `autoexec.sh` from the SD card at boot. The camera already has `perl` and `busybox`.
-- A USB HDMI capture card and a Linux laptop with `ffmpeg`/`ffplay` (or OBS).
+- A USB HDMI capture card and a Linux laptop with GStreamer (`gst-launch-1.0`; or `ffmpeg`/`ffplay`, or OBS).
 
 ## Install
 
 Copy the contents of `sd/` to the root of the SD card, next to hunkreborn's `nx_cs.adj`:
 - `autoexec.sh`;
 - `hdmidemo.adj` (empty);
-- `parche/` (scripts plus the two empty flag files `demo-2d` and `ignorar-desconexion`);
+- `parche/` (scripts plus the empty flag files `demo-2d`, `ignorar-desconexion` and `enfoque-manual`; delete
+  `enfoque-manual` to turn the manual-focus patches off);
 - `inetd.conf` (only used by the optional Wi-Fi + Telnet, see below).
 
 ## Use (order matters)
 
 1. Turn the camera on **without** the HDMI cable (photo mode). The patches are applied and the watcher waits.
-2. On the laptop run `sh laptop/ver-en-vivo.sh`. **Open it before plugging the cable:** the MacroSilicon card only
-   asserts hot-plug (HPD) while a program is reading from it.
+2. On the laptop run `sh laptop/ver-en-vivo-gst.sh`. **Open it before plugging the cable:** the MacroSilicon card
+   only asserts hot-plug (HPD) while a program is reading from it.
 3. Plug the micro HDMI cable. The camera screen goes black and after ~5 s the live view appears on the laptop.
-4. Set the lens to **AF** for continuous autofocus.
+4. Focus with the lens ring (switch on MF), or move the switch to AF for autofocus.
 
-Closing and reopening the laptop window while the cable is plugged is fine. To get the normal camera back, power it
-off **without** the cable and on again. If it does not power off, remove the battery.
+While the demo is running, do not press the shutter button or the movie button:
+- a half-press makes the camera turn its rear screen back on, and then the HDMI output shows that screen cut into
+  repeated strips;
+- plugging the cable while recording a movie crashes the camera program ("change op mode from movie to mov-hdmi" in
+  the log).
+
+If the picture shows strips or color bars right after plugging the cable, unplug the capture card from USB and plug
+it back in: ours sometimes locks badly onto the signal when the demo starts. Plug the card straight into the laptop:
+ours dropped off USB many times on a USB 2.0 hub shared with other devices (it asks for 500 mA). If the picture freezes,
+close the window and open it again; with the cable already plugged in, the camera takes it as a new connection.
+The micro HDMI plug is sensitive: moving the cable can drop the signal.
+
+To get the normal camera back, power it off **without** the cable and on again. If it does not power off, remove
+the battery.
 
 ## Iterating with an AI agent (optional Wi-Fi + Telnet)
 
@@ -80,8 +114,10 @@ This live view was found by iterating with an AI coding agent: it changes someth
 and looks at what reaches the capture card, then tries again. To work the same way:
 
 1. **Enable Wi-Fi + Telnet at boot.** Create an empty file `parche/wifi-telnet` on the SD card.
-   - You also need hunkreborn's package: `remote/` (mewlips' remote controller mod, which joins the Wi-Fi network
-     saved in the camera) and `inetd.conf` in the SD root (included in `sd/`).
+   - You also need hunkreborn's package (`remote/`, mewlips' remote controller mod: `parche/wifi.sh` uses its
+     `disconnect.sh`) and `inetd.conf` in the SD root (included in `sd/`). `parche/wifi.sh` replaces the package's
+     `connect.sh`, which simulates a key press that the camera takes as a shutter half-press, and the package's web
+     remote control server is not started.
    - Connect the camera to your Wi-Fi once from its own menu so the network is saved.
    - ⚠️ Telnet gives root **without password** and FTP exposes the SD card: only on a trusted network. Remove the flag
      file when you are done (it also saves battery).
@@ -117,15 +153,26 @@ and looks at what reaches the capture card, then tries again. To work the same w
   registers. Display processor at `0x500B0000`: TV block at +0x100 (video window address at `0x500B0300`); LCD block
   at +0x600 (video window address at `0x500B0800`).
 - Re-reading a DMA buffer with `dd if=/dev/mem` returns stale cached data: map `/dev/mem` with `O_SYNC` instead.
+- Manual focus on NX lenses is "electric MF": the lens moves the focus itself when the camera grants it. In
+  `liblens-fw-prod.so`, the log text `MFRingEventProhibition %d` is printed by two functions: the one for the iFn ring
+  and `SetPropertyElectricMFPermission`. The second one is the one that matters for the ring in MF.
+- A crashed camera program (`do_group_exit(6)` in `dmesg`) can still send live view to the laptop, because the sensor
+  and the mirror keep running. To know whether it is alive, check `dmesg` and the state of thread 270, not the
+  picture.
+- `UI_Callback_Lens_Focus_Mode` (the AF/MF switch handler) jumps by user interface state: from the photo screen it
+  draws several icons and sends `3A_CAF`; from the menu it only hides a help message; while recording a movie it calls
+  `UI_Manage_Movie_AF`, which sends `3A_MOVIEAF`.
+- With an empty battery, the camera program starts powering off ("[Battery -> UI] level :0", "next_mode:POWER_OFF",
+  a "processing" popup) and rejects lens notices ("batt:0"): a test that fails for no reason may just be the battery.
 - The kernel sources were essential: [atsidaev/samsung-nx-kernel](https://github.com/atsidaev/samsung-nx-kernel)
   (`include/video/drime4/d4_dp_ioctl.h`, `drivers/video/drime4/tv/d4_dp_tv_reg.h`, `include/video/hdmi/*`).
 
 ## To do
 
-- Manual focus with the lens ring, to avoid continuous AF and save battery. In demo mode the ring does not respond
-  yet: on NX lenses the ring only sends a signal that the camera program has to act on.
 - HD: the 1920×1080 frames exist, but in an internal compressed format (format 4) that the TV window does not show
   as is.
+- A faster autofocus in the demo (the movie AF is slower than the photo AF of Smart Auto).
+- Power from a dummy battery, for long sessions.
 - Clean power-off from demo mode.
 
 ## Credits
@@ -162,28 +209,42 @@ capturadora HDMI USB. Sirve para transmitir con OBS.
 > **Calidad actual: de DVD, 720×480.** Es el tamaño de la imagen en vivo que se puede mostrar hoy (la señal HDMI va
 > a 1080). La calidad HD es el siguiente objetivo.
 
-**Resultado:** encuadre completo, proporciones y colores correctos, fluido, con 0,5–1 s de retraso.
-- Enfoque automático continuo con la lente en **AF**. Funciona, pero mueve el motor sin parar y gasta batería: el
-  objetivo es el **enfoque manual con el anillo** (pendiente).
-- Límites: calidad de DVD (720×480), la pantalla de la cámara queda en negro, el anillo de enfoque manual no
-  responde y gasta mucha batería.
+**Resultado:** encuadre completo, proporciones y colores correctos, fluido, con **0,3–0,6 s de retraso** con la
+ventana de GStreamer (`laptop/ver-en-vivo-gst.sh`).
+- **Enfoque manual con el anillo, en vivo**: con el interruptor de la lente en MF, el anillo enfoca y el foco se queda
+  donde lo dejas. El motor no se mueve solo, así que gasta menos batería.
+- **El interruptor AF/MF funciona en vivo**: en AF enfoca solo (con el autofoco de vídeo, algo más lento y que tiende a
+  quedarse con el primer enfoque) y en MF manda el anillo.
+- Para enfocar al centro en vez de seguir caras: modo **Program**, "Área de AF" en **Selección AF** y "Modo de AF" en
+  **AF continuo**. En Smart Auto la cámara sigue las caras y dibuja un recuadro blanco en la salida.
+- La demo respeta la exposición del modo (compensación, ISO y medición).
+- Límites: calidad de DVD (720×480), la pantalla de la cámara queda en negro y gasta mucha batería.
 
 **Cómo se usa:**
 1. Copiar `sd/` a la raíz de la SD, junto al `nx_cs.adj` del mod de hunkreborn.
 2. Encender la cámara **sin** el cable.
-3. Abrir en la laptop `sh laptop/ver-en-vivo.sh`.
-4. **Después**, conectar el micro HDMI.
+3. Abrir en la laptop `sh laptop/ver-en-vivo-gst.sh`.
+4. **Después**, conectar el micro HDMI y enfocar con el anillo, o pasar el interruptor a AF.
+5. Con la demo en marcha, no tocar el disparador ni el botón de grabar: apretar el disparador a medias enciende la
+   pantalla trasera y estropea la salida, y conectar grabando vídeo tumba el programa.
+6. Si al conectar salen franjas o barras de colores, desenchufar y volver a enchufar la capturadora por USB.
+   Enchufarla directamente a la laptop, no a un hub.
 
 **Por dentro:**
 - `hdmidemo.adj` activa un modo demo de fábrica (pensado para televisores 3D).
 - Unos parches en memoria lo dejan en 2D.
+- Otros (`parche-mf.pl`, con el archivo vacío `parche/enfoque-manual`) dejan siempre dado el permiso del "enfoque
+  eléctrico". La demo lo quitaba al conectar el HDMI. Además hacen que, durante la demo, la cámara ignore los avisos
+  del anillo, como ya hace de fábrica en la demo 3D, y que el interruptor AF/MF vaya por el camino del autofoco de
+  vídeo sin dibujar iconos. La lente mueve el foco ella misma.
 - Un script en la cámara (`espejo-mem.pl`) pone en la salida HDMI la imagen en vivo horizontal, con paso doble
   porque la salida es entrelazada.
 - La laptop recorta y agranda esa imagen.
 
 **Para iterar con un agente de IA:**
 - se puede encender Wi-Fi + Telnet/FTP al arrancar, creando el archivo vacío `parche/wifi-telnet` (necesita el
-  paquete de hunkreborn);
+  paquete de hunkreborn). Va con `parche/wifi.sh`, que sustituye al `connect.sh` del paquete: aquel simula una tecla
+  que la cámara toma como el disparador a medias;
 - el agente da órdenes con `tools/nxtel.py`, lee los registros de `registros/` en la SD y mira la capturadora con
   `ffmpeg`;
 - Telnet entra como root sin clave: solo en una red de confianza;

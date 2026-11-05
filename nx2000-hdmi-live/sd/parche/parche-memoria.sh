@@ -13,6 +13,8 @@
 #     a) 0x1ded8c "bl UI_Set_HDMI_3D_Type" -> nop: avoids set_hdmi() in libmm-displayer, which forces 3D,
 #        YCbCr 4:2:2 and 1080p25 (wrong colors / no picture on a capture card). HDMI stays as the kernel sets it (RGB).
 #     b) 0x1dedb0 "mov r3, #4" -> "mov r3, #0": mm_camcorder "stereo-video-format" = 0 instead of 4.
+#  7) (only if parche/demo-2d and parche/enfoque-manual exist) manual focus with the lens ring: electric MF is always
+#     granted. Details in parche-mf.pl; its "demo" phase (8a, 8b, 9) is run by esperar-hdmi.sh.
 L=/mnt/mmc/registros/parche-memoria.txt
 mkdir -p /mnt/mmc/registros
 P=$(pidof di-camera-app-nx2000)
@@ -34,5 +36,8 @@ if [ -e /mnt/mmc/parche/demo-2d ]; then
       printf "parche 6 en %x: antes %s despues %s\n", $dir, $a, rd($dir, 4);
     }
   ' $P >> $L 2>&1
+fi
+if [ -e /mnt/mmc/parche/demo-2d ] && [ -e /mnt/mmc/parche/enfoque-manual ]; then
+  perl /mnt/mmc/parche/parche-mf.pl $P arranque >> $L 2>&1
 fi
 sync
