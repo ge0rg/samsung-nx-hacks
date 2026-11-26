@@ -40,6 +40,17 @@ engineered documentation!
 |Gear360|DRIMeVs| ✅ | ~216MB-321MB | limited working through [Gear 360 modding](https://github.com/ottokiksmaler/gear360_modding) project |
 
 
+## NX500 Unbrick / Firmware Recovery (Without Disassembly)
+
+A previously undocumented built-in recovery mode on the **Samsung NX500** can recover soft-bricked cameras (for example after a failed `nx-on-wake` install or `systemctl rescue`) using an official firmware file on an SD card—no disassembly, motherboard shorting, UART, or `downloader.bin` required:
+
+1. Extract an official, unmodified `nx500.bin` (e.g. v1.12) to the root of a clean **FAT32** SD card.
+2. Remove the battery, insert the SD card, flip the display **fully upward into the selfie position**, and reinsert the battery.
+3. Hold **MOBILE (Wi-Fi) + AEL + full Shutter** together, then switch the camera **ON**.
+4. When **Recovery Mode** appears, release the buttons and **hold the shutter button** as prompted to flash `nx500.bin`. Keep power uninterrupted until `Update Finish`.
+
+*Scope & credits:* Verified end-to-end on a soft-bricked **NX500** through `Update Finish` and normal boot (**not verified on the NX1** or other NX models). Based on `boot0` reverse engineering by [WApaperplane (`nx500-dnloader`)](https://github.com/WApaperplane/nx500-dnloader/blob/main/docs/BOOT0_ANATOMY.md) (`GPIO_WIFI_KEY` 19, `GPIO_SHUTTER_KEY2` 27, `GPIO_FLIPUP_INT` 30, `GPIO_AEL_KEY` 31 in `gpio_map_nx500.h`) and SLP/`rImage` research in [nx500_nx1_modding#121](https://github.com/ottokiksmaler/nx500_nx1_modding/issues/121); independently identified and hardware-verified by REVPKD.
+
 ## Further Reading
 
 This project (and code execution on the NX300) is based on the following articles:
